@@ -1,4 +1,5 @@
 from triangle import Triangle
+import genetic_algorithm
 from PIL import Image, ImageDraw
 import random
 import turtle
@@ -33,6 +34,9 @@ def create_image(triangles, img_width, img_height, num):
 
 
 def initial_population(img_width, img_height, n):
+    # Initialize a list of lists that contain the triangles inside an image.
+    image_data_list = []
+
     for x in range(n):
         # Initialize a list of triangles.
         triangles = []
@@ -79,12 +83,11 @@ def initial_population(img_width, img_height, n):
 
         create_image(triangles, img_width, img_height, x)
     
-    # Initialize a list of lists that contain the triangles that are inside an image.
-    image_list = []
-    image_list.append(triangles)
+        # Append the list of triangles to the list of image data.
+        image_data_list.append(triangles)
 
     # Return the list of images generated and the most recent image index.
-    return [image_list, i]
+    return [image_data_list, i]
 
 
 
@@ -93,18 +96,20 @@ def main(img_name, n_population):
 
 
 if __name__ == "__main__":
-    # Get the image by command line argument.
-    img, n_population = main(sys.argv[1], sys.argv[2])
+    # Get the target image by command line argument.
+    target_img, n_population = main(sys.argv[1], sys.argv[2])
 
-    width, height = img.size
+    width, height = target_img.size
 
     if not os.path.exists("generated_images"):
         os.makedirs("generated_images")
 
-    # Call the initial population function and set the image list and the most
+    # Call the initial population function and set the image data list and the most
     # recent image index.
-    image_list, i = initial_population(width, height, n_population)
+    image_data_list, i = initial_population(width, height, n_population)
 
-    for image in image_list:
-        for triangle in image:
-            str(triangle)
+    parent_1, parent_2 = genetic_algorithm.selection(target_img, i, image_data_list)
+
+    print(parent_1, parent_2)
+
+    
