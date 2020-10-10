@@ -52,11 +52,19 @@ def selection(target_img, i, image_data_list):
     # Sort the dictionary by color difference and convert it into a list.
     sorted_color_diff = sorted(color_diff_dict.items(), key=lambda x: x[1])
 
-    # Set the two parents for reproduction as the two images with the lowest total
-    # color differences. The parent value will be the numeric ID in front of the
+    # Set the two parent ID's for reproduction as the two images with the lowest total
+    # color differences. The parent ID will be the numeric value in front of the
     # file extension.
-    parent_1 = int(sorted_color_diff[0][0].split('.')[0])
-    parent_2 = int(sorted_color_diff[1][0].split('.')[0])
+    parent_1_id = int(sorted_color_diff[0][0].split('.')[0])
+    parent_2_id = int(sorted_color_diff[1][0].split('.')[0])
+
+    # Get the images from the parent ID's and set them as the parents for reproduction.
+    parent_1 = image_data_list[parent_1_id]
+    parent_2 = image_data_list[parent_2_id]
 
     # Return the two parents for reproduction.
     return [parent_1, parent_2]
+
+def crossover(parent_1, parent_2):
+    print(parent_1)
+    print(parent_2)

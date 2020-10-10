@@ -7,9 +7,10 @@ import sys
 import os
 
 
-def is_triangle(ax, ay, bx, by, cx, cy):
-    # Very if shape is a triangle. Not all x coordinates can be
-    # the same, and not all y coordinates can be the same.
+def forms_triangle(ax, ay, bx, by, cx, cy):
+    # Verify if the coordinates form a triangle. Not all x
+    # coordinates can be the same, and not all y coordinates
+    # can be the same, or a straight line would be formed.
     if (ax != bx and ax != cx and bx != cx and
             ay != by and ay != cy and by != cy):
         return True
@@ -45,7 +46,7 @@ def initial_population(img_width, img_height, n):
         i = 0
 
         while True:
-            if i == 100:
+            if i == 10:
                 # Stop creating triangles if counter is equal to 100.
                 break
 
@@ -57,7 +58,7 @@ def initial_population(img_width, img_height, n):
             cx = random.randint(0, img_width)
             cy = random.randint(0, img_height)
 
-            if is_triangle(ax, ay, bx, by, cx, cy):
+            if forms_triangle(ax, ay, bx, by, cx, cy):
                 # If the coordinates successfully form a triangle, create a
                 # new instance of a triangle.
                 triangle = Triangle()
@@ -79,16 +80,16 @@ def initial_population(img_width, img_height, n):
                 triangles.append(triangle)
 
                 # Increment the counter.
-                i+=1
+                i += 1
 
+        # Call the create image function.
         create_image(triangles, img_width, img_height, x)
-    
+
         # Append the list of triangles to the list of image data.
         image_data_list.append(triangles)
 
     # Return the list of images generated and the most recent image index.
     return [image_data_list, i]
-
 
 
 def main(img_name, n_population):
@@ -108,8 +109,8 @@ if __name__ == "__main__":
     # recent image index.
     image_data_list, i = initial_population(width, height, n_population)
 
-    parent_1, parent_2 = genetic_algorithm.selection(target_img, i, image_data_list)
+    # Call the selection function and retrieve the two parent ID's for reproduction.
+    parent_1, parent_2 = genetic_algorithm.selection(
+        target_img, i, image_data_list)
 
-    print(parent_1, parent_2)
-
-    
+    genetic_algorithm.crossover(parent_1, parent_2)
