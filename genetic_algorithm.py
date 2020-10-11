@@ -1,6 +1,8 @@
 import math
 import os
+import random
 from PIL import Image, ImageDraw
+from triangle import Triangle
 
 
 def fitness(target_img, generated_img):
@@ -65,6 +67,45 @@ def selection(target_img, i, image_data_list):
     # Return the two parents for reproduction.
     return [parent_1, parent_2]
 
+
 def crossover(parent_1, parent_2):
-    print(parent_1)
-    print(parent_2)
+    # Randomly select half of the elements from each parent.
+    parent_1_triangles = random.sample(parent_1, int(len(parent_1)/2))
+    parent_2_triangles = random.sample(parent_2, int(len(parent_2)/2))
+
+    # Create an offspring that will inherit  half of parent 1's
+    # elements and half of parent 2's elements.
+    offspring = []
+    
+    for triangle in parent_1_triangles:
+        offspring.append(triangle)
+
+    for triangle in parent_2_triangles:
+        offspring.append(triangle)
+
+    return offspring
+
+
+def mutation(offspring, img_width, img_height):
+    for x in range(random.randint(1, 3)):
+
+        ax = random.randint(0, img_width)
+        ay = random.randint(0, img_height)
+        bx = random.randint(0, img_width)
+        by = random.randint(0, img_height)
+        cx = random.randint(0, img_width)
+        cy = random.randint(0, img_height)
+
+        red = random.randint(0, 255)
+        blue = random.randint(0, 255)
+        green = random.randint(0, 255)
+
+        # In a random range from 1 to 3, generate a new triangle
+        # with random attributes.
+        triangle = Triangle.create_triangle(Triangle, ax, ay, bx, by, cx, cy, red, green, blue)
+
+        if triangle is not None:
+            # Randomly select an element to change (mutate).
+            offspring[random.randint(0, 9)] = triangle
+
+    return offspring

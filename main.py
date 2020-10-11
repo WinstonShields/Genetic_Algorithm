@@ -7,15 +7,6 @@ import sys
 import os
 
 
-def forms_triangle(ax, ay, bx, by, cx, cy):
-    # Verify if the coordinates form a triangle. Not all x
-    # coordinates can be the same, and not all y coordinates
-    # can be the same, or a straight line would be formed.
-    if (ax != bx and ax != cx and bx != cx and
-            ay != by and ay != cy and by != cy):
-        return True
-
-
 def create_image(triangles, img_width, img_height, num):
     # Create image object with the same dimensions as the original
     # image.
@@ -34,11 +25,11 @@ def create_image(triangles, img_width, img_height, num):
     img.save(f"generated_images/{num}.jpg", 'JPEG')
 
 
-def initial_population(img_width, img_height, n):
+def initial_population(img_width, img_height):
     # Initialize a list of lists that contain the triangles inside an image.
     image_data_list = []
 
-    for x in range(n):
+    for x in range(10):
         # Initialize a list of triangles.
         triangles = []
 
@@ -58,29 +49,21 @@ def initial_population(img_width, img_height, n):
             cx = random.randint(0, img_width)
             cy = random.randint(0, img_height)
 
-            if forms_triangle(ax, ay, bx, by, cx, cy):
-                # If the coordinates successfully form a triangle, create a
-                # new instance of a triangle.
-                triangle = Triangle()
+            # Randomly generate RGB values.
+            red = random.randint(0, 255)
+            green = random.randint(0, 255)
+            blue = random.randint(0, 255)
 
-                # Give the triangle the coordinates that were randomly generated.
-                triangle.a = [ax, ay]
-                triangle.b = [bx, by]
-                triangle.c = [cx, cy]
+            # Create a triangle.
+            triangle = Triangle.create_triangle(
+                Triangle, ax, ay, bx, by, cx, cy, red, green, blue)
 
-                # Randomly generate RGB values.
-                red = random.randint(0, 255)
-                blue = random.randint(0, 255)
-                green = random.randint(0, 255)
-
-                # Set the RGB values to the triangle color.
-                triangle.color = [red, blue, green]
-
-                # Append the triangle to the list of triangles.
+            if triangle is not None:
+                # If a triangle was created, append it to the list of triangles.
                 triangles.append(triangle)
 
                 # Increment the counter.
-                i += 1
+                i = i + 1
 
         # Call the create image function.
         create_image(triangles, img_width, img_height, x)
@@ -89,16 +72,16 @@ def initial_population(img_width, img_height, n):
         image_data_list.append(triangles)
 
     # Return the list of images generated and the most recent image index.
-    return [image_data_list, i]
+    return [image_data_list, x]
 
 
-def main(img_name, n_population):
-    return [Image.open(img_name), int(n_population)]
+def get_image(img_name):
+    return Image.open(img_name)
 
 
 if __name__ == "__main__":
     # Get the target image by command line argument.
-    target_img, n_population = main(sys.argv[1], sys.argv[2])
+    target_img = get_image(sys.argv[1])
 
     width, height = target_img.size
 
@@ -107,10 +90,34 @@ if __name__ == "__main__":
 
     # Call the initial population function and set the image data list and the most
     # recent image index.
-    image_data_list, i = initial_population(width, height, n_population)
+    image_data_list, i = initial_population(width, height)
 
-    # Call the selection function and retrieve the two parent ID's for reproduction.
-    parent_1, parent_2 = genetic_algorithm.selection(
-        target_img, i, image_data_list)
+    while True:
 
-    genetic_algorithm.crossover(parent_1, parent_2)
+        # Call the selection function and retrieve the two parent ID's for reproduction.
+        parent_1, parent_2 = genetic_algorithm.selection(
+            target_img, i, image_data_list)
+
+        # Retrieve an offspring reproduced by the crossover of parent 1 and parent 2.
+        offspring = genetic_algorithm.crossover(parent_1, parent_2)
+
+        # Mutate the offspring of the parents.
+        mutated_offspring = genetic_algorithm.mutation(offspring, width, height)
+
+        image_data_list.append(mutated_offspring)
+
+        new_image = []
+
+        for triangle in parent_1:
+            new_image.append(triangle)
+
+        for triangle in parent_2:
+            new_image.append(triangle)
+
+        for triangle in mutated_offspring:
+            new_image.append(triangle)
+
+        create_image(new_image, width, height, i)
+
+        i = i + 1
+
