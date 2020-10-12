@@ -58,23 +58,21 @@ class Triangle:
             return True
 
     def create_triangle(self, ax, ay, bx, by, cx, cy, red, green, blue):
-        if self.forms_triangle(self, ax, ay, bx, by, cx, cy):
-            # If the coordinates successfully form a triangle, create a
-            # new instance of a triangle.
-            triangle = Triangle()
+        if self.forms_triangle(ax, ay, bx, by, cx, cy):
+            # If the coordinates successfully form a triangle, set up the triangle.
 
             # Give the triangle the coordinates that were randomly generated.
-            triangle.a = [ax, ay]
-            triangle.b = [bx, by]
-            triangle.c = [cx, cy]
+            self.a = [ax, ay]
+            self.b = [bx, by]
+            self.c = [cx, cy]
 
             # Set the RGB values to the triangle color.
-            triangle.color = [red, green, blue]
+            self.color = [red, green, blue]
 
-            return triangle
+            return True
         else:
             # If no triangle is formed, return none.
-            return None
+            return False
 
     def __str__(self):
         return f"A: {self.a}, B: {self.b}, C: {self.c}, RGB: {self.color}"
