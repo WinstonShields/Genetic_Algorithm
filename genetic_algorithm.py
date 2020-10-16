@@ -4,6 +4,7 @@ import random
 import math
 import operator
 from PIL import Image
+import copy
 
 
 def initial_population(img_width, img_height, initial_pop_size, num_of_triangles):
@@ -16,12 +17,12 @@ def initial_population(img_width, img_height, initial_pop_size, num_of_triangles
 
         for j in range(num_of_triangles):
             # Randomly select a coordinate for each point: A, B, and C
-            ax = random.randint(0, img_width)
-            ay = random.randint(0, img_height)
-            bx = random.randint(0, img_width)
-            by = random.randint(0, img_height)
-            cx = random.randint(0, img_width)
-            cy = random.randint(0, img_height)
+            ax = random.randint(0, img_width + 20)
+            ay = random.randint(0, img_height + 20)
+            bx = random.randint(0, img_width + 20)
+            by = random.randint(0, img_height + 20)
+            cx = random.randint(0, img_width + 20)
+            cy = random.randint(0, img_height + 20)
 
             # Randomly generate RGB values.
             red = random.randint(0, 255)
@@ -103,16 +104,18 @@ def selection(target_img, individuals):
 
 def crossover(parent_1, parent_2, population_size, num_of_triangles, id, img_width, img_height):
     # Initialize a list of children.
-    children = []
+    children = [] 
 
     for i in range(population_size):
         # Get a random number of triangles to select from each parent.
-        select_size = random.randint(1, num_of_triangles/2)
+        select_size = random.randint(1, num_of_triangles - 1)
         parent_1_triangles = random.sample(parent_1.triangles, select_size)
 
-        print(len(parent_2.triangles), num_of_triangles - select_size)
+        #print(num_of_triangles - select_size)
+
         parent_2_triangles = random.sample(
             parent_2.triangles, num_of_triangles - select_size)
+
 
         # Initialize a child individual.
         child = Individual()
@@ -127,28 +130,38 @@ def crossover(parent_1, parent_2, population_size, num_of_triangles, id, img_wid
         for triangle in parent_2_triangles:
             child.triangles.append(triangle)
 
-        # Mutate the child.
-        child = mutation(child, img_width, img_height)
 
         child.create_image(img_width, img_height)
 
-        id += 1
-
         # Append the child to the list of children.
         children.append(child)
+
+        # Create a mutated version of the child.
+        mutated_child = Individual()
+        mutated_child = copy.deepcopy(child)
+        id += 1
+        mutated_child.id = id
+        mutated_child = mutation(mutated_child, img_width, img_height)
+
+        mutated_child.create_image(img_width, img_height)
+
+        # Append the child to the list of children.
+        children.append(mutated_child)
+
+        id += 1
 
     return children
 
 
 def mutation(individual, img_width, img_height):
-    # Make the max amount of mutations to occur the number of triangles divided by 4.
-    for x in range(random.randint(1, int(len(individual.triangles)/4))):
-        ax = random.randint(0, img_width)
-        ay = random.randint(0, img_height)
-        bx = random.randint(0, img_width)
-        by = random.randint(0, img_height)
-        cx = random.randint(0, img_width)
-        cy = random.randint(0, img_height)
+    # Make the mutation amount of the individual only 10%.
+    for x in range(random.randint(1, int(len(individual.triangles)*0.10))):
+        ax = random.randint(0, img_width + 20)
+        ay = random.randint(0, img_height + 20)
+        bx = random.randint(0, img_width + 20)
+        by = random.randint(0, img_height + 20)
+        cx = random.randint(0, img_width + 20)
+        cy = random.randint(0, img_height + 20)
 
         red = random.randint(0, 255)
         blue = random.randint(0, 255)

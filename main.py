@@ -46,6 +46,8 @@ if __name__ == "__main__":
 
         parent_1, parent_2 = genetic_algorithm.selection(target_img, children)
 
+        print(parent_1.fitness, parent_2.fitness)
+
         if next_id % 20 == 0:
             parent_1.image.save(f"generated_images/{parent_1.id}.jpg", 'JPEG')
             parent_2.image.save(f"generated_images/{parent_2.id}.jpg", 'JPEG')
