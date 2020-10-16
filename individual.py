@@ -1,31 +1,29 @@
 from triangle import Triangle
 from PIL import Image, ImageDraw
 
-# The individual is the object form of the image that is generated.
-
 
 class Individual:
-
-    def __init__(self):
-        self._name = ''
-        self._genes = []
+    def __init_(self):
+        self._id = 0
+        self._triangles = []
         self._fitness = 0
+        self._image = None
 
     @property
-    def name(self):
-        return self._name
+    def id(self):
+        return self._id
 
-    @name.setter
-    def name(self, value):
-        self._name = value
+    @id.setter
+    def id(self, value):
+        self._id = value
 
     @property
-    def genes(self):
-        return self._genes
+    def triangles(self):
+        return self._triangles
 
-    @genes.setter
-    def genes(self, value):
-        self._genes = value
+    @triangles.setter
+    def triangles(self, value):
+        self._triangles = value
 
     @property
     def fitness(self):
@@ -35,20 +33,27 @@ class Individual:
     def fitness(self, value):
         self._fitness = value
 
+    @property
+    def image(self):
+        return self._image
+
+    @image.setter
+    def image(self, value):
+        self._image = value
+
     def create_image(self, img_width, img_height):
-        # Create image object with the same dimensions as the original
+       # Create image object with the same dimensions as the original
         # image.
         img = Image.new('RGB', (img_width, img_height))
 
         # Create draw object with alpha channel (so that image can be translucent).
         draw = ImageDraw.Draw(img, 'RGBA')
 
-        for triangle in self.genes:
+        for triangle in self.triangles:
             # Draw each triangle in the list of genes.
             draw.polygon([(triangle.a[0], triangle.a[1]), (triangle.b[0], triangle.b[1]),
                           (triangle.c[0], triangle.c[1])],
                          (triangle.color[0], triangle.color[1], triangle.color[2], 100))
 
-        # Save the drawings to an image.
-        img.save(f"generated_images/{self.name}", 'JPEG')
-
+        # Set image drawn to the individual.
+        self.image = img

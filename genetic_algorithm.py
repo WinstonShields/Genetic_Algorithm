@@ -1,21 +1,20 @@
 from triangle import Triangle
 from individual import Individual
-from PIL import Image, ImageDraw
 import random
 import math
 import operator
+from PIL import Image
 
 
 def initial_population(img_width, img_height, initial_pop_size, num_of_triangles):
-    # Initialize a list of individuals.
+    # Initialize list of individuals.
     individuals = []
 
-    for x in range(initial_pop_size):
-        # Initialize a list of triangles.
+    for i in range(initial_pop_size):
+        # Initialize list of triangles
         triangles = []
 
-        for num in range(num_of_triangles):
-
+        for j in range(num_of_triangles):
             # Randomly select a coordinate for each point: A, B, and C
             ax = random.randint(0, img_width)
             ay = random.randint(0, img_height)
@@ -36,20 +35,17 @@ def initial_population(img_width, img_height, initial_pop_size, num_of_triangles
                 # If triangle is successfully created, append it to a list of triangles.
                 triangles.append(triangle)
 
-        # Produce an individual.
+        # Create a new individual.
         individual = Individual()
+        individual.id = len(individuals)
 
-        # Append the triangles in the list of individual genes.
-        for triangle in triangles:
-            individual.genes.append(triangle)
+        # Set the list of triangles into the individual.
+        individual.triangles = triangles
 
-        # Set the name of the individual.
-        individual.name = f"{x}.jpg"
-
-        # Create an image based off of the individual.
+        # Create an image for the triangle.
         individual.create_image(img_width, img_height)
 
-        # Append each indivdual to the list of individuals.
+        # Append the individual to the list of individuals.
         individuals.append(individual)
 
     return individuals
@@ -87,17 +83,16 @@ def fitness(target_img, individual_img):
 
 
 def selection(target_img, individuals):
-
     for individual in individuals:
         # Set the individual's fitness value by calling the fitness function.
-        individual.fitness = fitness(target_img.convert("RGB"), Image.open(
-            "generated_images/" + individual.name).convert("RGB"))
+        individual.fitness = fitness(target_img.convert(
+            "RGB"), individual.image.convert("RGB"))
 
     # Sort the list of individuals from lowest fitness score to highest.
     individuals = sorted(
         individuals, key=operator.attrgetter('fitness'), reverse=False)
 
-    # Set the parents for reproduction to the first two individuals in the 
+    # Set the parents for reproduction to the first two individuals in the
     # sorted individual list, because they are the individuals with the
     # lowest total color difference (best fitness value).
     parent_1 = individuals[0]
@@ -105,27 +100,49 @@ def selection(target_img, individuals):
 
     return [parent_1, parent_2]
 
-def crossover(parent_1, parent_2):
-    # Randomly select half of the elements from each parent.
-    parent_1_genes = random.sample(parent_1.genes, int(len(parent_1.genes)/2))
-    parent_2_genes = random.sample(parent_2.genes, int(len(parent_2.genes)/2))
 
-    # Create an offspring that will inherit  half of parent 1's
-    # elements and half of parent 2's elements.
-    offspring = Individual()
+def crossover(parent_1, parent_2, population_size, num_of_triangles, id, img_width, img_height):
+    # Initialize a list of children.
+    children = []
 
-    # Append the genes from each parent into the offspring.
-    for triangle in parent_1_genes:
-        offspring.genes.append(triangle)
+    for i in range(population_size):
+        # Get a random number of triangles to select from each parent.
+        select_size = random.randint(1, num_of_triangles/2)
+        parent_1_triangles = random.sample(parent_1.triangles, select_size)
 
-    for triangle in parent_2_genes:
-        offspring.genes.append(triangle)
+        print(len(parent_2.triangles), num_of_triangles - select_size)
+        parent_2_triangles = random.sample(
+            parent_2.triangles, num_of_triangles - select_size)
 
-    return offspring
+        # Initialize a child individual.
+        child = Individual()
+        child.id = id
 
-def mutation(offspring, img_width, img_height):
-    for x in range(random.randint(1, 3)):
+        child.triangles = []
 
+        # Append the selected triangles from each parent into the child.
+        for triangle in parent_1_triangles:
+            child.triangles.append(triangle)
+
+        for triangle in parent_2_triangles:
+            child.triangles.append(triangle)
+
+        # Mutate the child.
+        child = mutation(child, img_width, img_height)
+
+        child.create_image(img_width, img_height)
+
+        id += 1
+
+        # Append the child to the list of children.
+        children.append(child)
+
+    return children
+
+
+def mutation(individual, img_width, img_height):
+    # Make the max amount of mutations to occur the number of triangles divided by 4.
+    for x in range(random.randint(1, int(len(individual.triangles)/4))):
         ax = random.randint(0, img_width)
         ay = random.randint(0, img_height)
         bx = random.randint(0, img_width)
@@ -139,14 +156,9 @@ def mutation(offspring, img_width, img_height):
 
         triangle = Triangle()
 
-        # In a random range from 1 to 3, generate a new triangle
-        # with random attributes.
+        # Mutate the individual.
         if triangle.create_triangle(ax, ay, bx, by, cx, cy, red, green, blue):
-            offspring.genes[random.randint(0, len(offspring.genes) - 1)] = triangle
+            individual.triangles[random.randint(
+                0, len(individual.triangles) - 1)] = triangle
 
-    return offspring
-
-
-
-
-
+    return individual
