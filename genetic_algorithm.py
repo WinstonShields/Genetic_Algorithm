@@ -17,12 +17,12 @@ def initial_population(img_width, img_height, initial_pop_size, num_of_triangles
 
         for j in range(num_of_triangles):
             # Randomly select a coordinate for each point: A, B, and C
-            ax = random.randint(0, img_width + 20)
-            ay = random.randint(0, img_height + 20)
-            bx = random.randint(0, img_width + 20)
-            by = random.randint(0, img_height + 20)
-            cx = random.randint(0, img_width + 20)
-            cy = random.randint(0, img_height + 20)
+            ax = random.randint(0, img_width)
+            ay = random.randint(0, img_height)
+            bx = random.randint(0, img_width)
+            by = random.randint(0, img_height)
+            cx = random.randint(0, img_width)
+            cy = random.randint(0, img_height)
 
             # Randomly generate RGB values.
             red = random.randint(0, 255)
@@ -32,9 +32,32 @@ def initial_population(img_width, img_height, initial_pop_size, num_of_triangles
             # Create a triangle.
             triangle = Triangle()
 
+            triangle_created = False
+
             if triangle.create_triangle(ax, ay, bx, by, cx, cy, red, green, blue):
                 # If triangle is successfully created, append it to a list of triangles.
                 triangles.append(triangle)
+                triangle_created = True
+
+            else:
+                while not triangle_created:
+                    ax = random.randint(0, img_width)
+                    ay = random.randint(0, img_height)
+                    bx = random.randint(0, img_width)
+                    by = random.randint(0, img_height)
+                    cx = random.randint(0, img_width)
+                    cy = random.randint(0, img_height)
+
+                    # Randomly generate RGB values.
+                    red = random.randint(0, 255)
+                    green = random.randint(0, 255)
+                    blue = random.randint(0, 255)
+
+                    if triangle.create_triangle(ax, ay, bx, by, cx, cy, red, green, blue):
+                        # If triangle is successfully created, append it to a list of triangles.
+                        triangles.append(triangle)
+                        triangle_created = True
+
 
         # Create a new individual.
         individual = Individual()
@@ -101,6 +124,28 @@ def selection(target_img, individuals):
 
     return [parent_1, parent_2]
 
+def asexual_reproduction(parent, population_size, num_of_triangles, id, img_width, img_height):
+    children = []
+
+    for i in range(population_size):
+        child = Individual()
+        child.id = id
+
+        child.triangles = []
+
+        for triangle in parent.triangles:
+            child.triangles.append(triangle)
+
+        child = mutation(child, img_width, img_height)
+
+        child.create_image(img_width, img_height)
+
+        children.append(child)
+
+        id += i
+
+    return children
+
 
 def crossover(parent_1, parent_2, population_size, num_of_triangles, id, img_width, img_height):
     # Initialize a list of children.
@@ -109,9 +154,8 @@ def crossover(parent_1, parent_2, population_size, num_of_triangles, id, img_wid
     for i in range(population_size):
         # Get a random number of triangles to select from each parent.
         select_size = random.randint(1, num_of_triangles - 1)
+        
         parent_1_triangles = random.sample(parent_1.triangles, select_size)
-
-        #print(num_of_triangles - select_size)
 
         parent_2_triangles = random.sample(
             parent_2.triangles, num_of_triangles - select_size)
@@ -156,12 +200,12 @@ def crossover(parent_1, parent_2, population_size, num_of_triangles, id, img_wid
 def mutation(individual, img_width, img_height):
     # Make the mutation amount of the individual only 10%.
     for x in range(random.randint(1, int(len(individual.triangles)*0.10))):
-        ax = random.randint(0, img_width + 20)
-        ay = random.randint(0, img_height + 20)
-        bx = random.randint(0, img_width + 20)
-        by = random.randint(0, img_height + 20)
-        cx = random.randint(0, img_width + 20)
-        cy = random.randint(0, img_height + 20)
+        ax = random.randint(0, img_width)
+        ay = random.randint(0, img_height)
+        bx = random.randint(0, img_width)
+        by = random.randint(0, img_height)
+        cx = random.randint(0, img_width)
+        cy = random.randint(0, img_height)
 
         red = random.randint(0, 255)
         blue = random.randint(0, 255)

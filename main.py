@@ -38,11 +38,13 @@ if __name__ == "__main__":
     del individuals
     gc.collect()
 
-
     while True:
 
-        children = genetic_algorithm.crossover(
-            parent_1, parent_2, population_size, num_of_triangles, next_id, img_width, img_height)
+        # children = genetic_algorithm.crossover(
+        #     parent_1, parent_2, population_size, num_of_triangles, next_id, img_width, img_height)
+
+        children = genetic_algorithm.asexual_reproduction(
+            parent_1, population_size, num_of_triangles, next_id, img_width, img_height)
 
         parent_1, parent_2 = genetic_algorithm.selection(target_img, children)
 
@@ -55,6 +57,4 @@ if __name__ == "__main__":
         del children
         gc.collect()
 
-        next_id+=1
-
-
+        next_id += 1
