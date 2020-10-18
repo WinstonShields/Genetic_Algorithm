@@ -6,15 +6,23 @@ import os
 import gc
 
 
-def command_line_arg(target_img, population_size, num_of_triangles):
-    return [Image.open(target_img), population_size, num_of_triangles]
+def command_line_arg(target_img, population_size, num_of_triangles, crossover_rate, mutation_rate):
+    if float(crossover_rate) > 1.0 or float(crossover_rate) < 0.0:
+        print("Crossover rate must be between 0.0 and 1.0")
+        exit(1)
+    if float(mutation_rate) > 1.0 or float(crossover_rate) < 0.0:
+        print("Mutation rate must be between 0.0 and 1.0")
+        exit(1)
+
+    
+    return [Image.open(target_img), population_size, num_of_triangles, crossover_rate, mutation_rate]
 
 
 if __name__ == "__main__":
     # Retrieve the target image, initial population size, and
     # number of triangles for each individual.
-    target_img, population_size, num_of_triangles = command_line_arg(
-        sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
+    target_img, population_size, num_of_triangles, crossover_rate, mutation_rate = command_line_arg(
+        sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 
     img_width, img_height = target_img.size
 
@@ -40,11 +48,11 @@ if __name__ == "__main__":
 
     while True:
 
-        # children = genetic_algorithm.crossover(
-        #     parent_1, parent_2, population_size, num_of_triangles, next_id, img_width, img_height)
+        children = genetic_algorithm.reproduction(
+            parent_1, parent_2, population_size, num_of_triangles, next_id, crossover_rate, mutation_rate, img_width, img_height)
 
-        children = genetic_algorithm.asexual_reproduction(
-            parent_1, population_size, num_of_triangles, next_id, img_width, img_height)
+        # children = genetic_algorithm.asexual_reproduction(
+        #     parent_1, population_size, num_of_triangles, next_id, img_width, img_height)
 
         parent_1, parent_2 = genetic_algorithm.selection(target_img, children)
 

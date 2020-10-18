@@ -58,7 +58,6 @@ def initial_population(img_width, img_height, initial_pop_size, num_of_triangles
                         triangles.append(triangle)
                         triangle_created = True
 
-
         # Create a new individual.
         individual = Individual()
         individual.id = len(individuals)
@@ -124,73 +123,57 @@ def selection(target_img, individuals):
 
     return [parent_1, parent_2]
 
-def asexual_reproduction(parent, population_size, num_of_triangles, id, img_width, img_height):
+
+def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, crossover_rate, mutation_rate, img_width, img_height):
+    # Initialize a list of children.
     children = []
 
-    for i in range(population_size):
-        child = Individual()
-        child.id = id
+    # Get the number of crossovers based on the crossover rate.
+    crossovers = int(population_size * crossover_rate)
 
-        child.triangles = []
-
-        for triangle in parent.triangles:
-            child.triangles.append(triangle)
-
-        child = mutation(child, img_width, img_height)
-
-        child.create_image(img_width, img_height)
-
-        children.append(child)
-
-        id += i
-
-    return children
-
-
-def crossover(parent_1, parent_2, population_size, num_of_triangles, id, img_width, img_height):
-    # Initialize a list of children.
-    children = [] 
+    # Get the number of mutations based on the mutation rate.
+    mutations = int(population_size * mutation_rate)
 
     for i in range(population_size):
-        # Get a random number of triangles to select from each parent.
-        select_size = random.randint(1, num_of_triangles - 1)
-        
-        parent_1_triangles = random.sample(parent_1.triangles, select_size)
-
-        parent_2_triangles = random.sample(
-            parent_2.triangles, num_of_triangles - select_size)
-
-
         # Initialize a child individual.
         child = Individual()
         child.id = id
-
         child.triangles = []
 
-        # Append the selected triangles from each parent into the child.
+        parent_1_triangles = []
+        parent_2_triangles = []
+
+        if crossovers == 0 or i >= crossovers:
+            # If there are no crossovers, just make a list of triangles from parent 1.
+            parent_1_triangles = copy.deepcopy(parent_1.triangles)
+
+        if crossovers != 0 and i < crossovers:
+            # If there are crossovers, get a random number of triangles to select from each parent.
+            select_size = random.randint(1, num_of_triangles - 1)
+
+            parent_1_triangles = random.sample(parent_1.triangles, select_size)
+
+            parent_2_triangles = random.sample(
+                parent_2.triangles, num_of_triangles - select_size)
+
+        # Append the selected triangles from parent 1 into the child.
         for triangle in parent_1_triangles:
             child.triangles.append(triangle)
 
-        for triangle in parent_2_triangles:
-            child.triangles.append(triangle)
+        if parent_2_triangles:
+            # If the list of parent 2 triangles is not empty, append the triangles
+            # into the child.
+            for triangle in parent_2_triangles:
+                child.triangles.append(triangle)
 
+        if mutations != 0 and i < mutations:
+            # If there are mutations, mutate the child.
+            child = mutation(child, img_width, img_height)
 
         child.create_image(img_width, img_height)
 
         # Append the child to the list of children.
         children.append(child)
-
-        # Create a mutated version of the child.
-        mutated_child = Individual()
-        mutated_child = copy.deepcopy(child)
-        id += 1
-        mutated_child.id = id
-        mutated_child = mutation(mutated_child, img_width, img_height)
-
-        mutated_child.create_image(img_width, img_height)
-
-        # Append the child to the list of children.
-        children.append(mutated_child)
 
         id += 1
 
