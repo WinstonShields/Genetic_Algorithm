@@ -14,7 +14,6 @@ def command_line_arg(target_img, population_size, num_of_triangles, crossover_ra
         print("Mutation rate must be between 0.0 and 1.0")
         exit(1)
 
-    
     return [Image.open(target_img), population_size, num_of_triangles, crossover_rate, mutation_rate]
 
 
@@ -48,21 +47,22 @@ if __name__ == "__main__":
 
     while True:
 
+        # Retrieve the children individuals using the reproduction funciton call.
         children = genetic_algorithm.reproduction(
             parent_1, parent_2, population_size, num_of_triangles, next_id, crossover_rate, mutation_rate, img_width, img_height)
-
-        # children = genetic_algorithm.asexual_reproduction(
-        #     parent_1, population_size, num_of_triangles, next_id, img_width, img_height)
 
         parent_1, parent_2 = genetic_algorithm.selection(target_img, children)
 
         print(parent_1.fitness, parent_2.fitness)
 
+        # Save every 20 individuals as images.
         if next_id % 20 == 0:
             parent_1.image.save(f"generated_images/{parent_1.id}.jpg", 'JPEG')
             parent_2.image.save(f"generated_images/{parent_2.id}.jpg", 'JPEG')
 
+        # Delete the children to 
         del children
         gc.collect()
 
+        # Increment the ID.
         next_id += 1
