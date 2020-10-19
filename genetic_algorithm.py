@@ -131,8 +131,16 @@ def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, cros
     # Get the number of crossovers based on the crossover rate.
     crossovers = int(population_size * crossover_rate)
 
+    # Make a set of randomized children that will result from crossovers, with the
+    # size being based off of the crossover rate.
+    crossover_set = set(random.sample(range(0, population_size - 1), crossovers))
+
     # Get the number of mutations based on the mutation rate.
     mutations = int(population_size * mutation_rate)
+
+    # Make a set of randomized children that will mutate, with the
+    # size being based off of the crossover rate.
+    mutation_set = set(random.sample(range(0, population_size - 1), mutations))
 
     for i in range(population_size):
         # Initialize a child individual.
@@ -143,11 +151,12 @@ def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, cros
         parent_1_triangles = []
         parent_2_triangles = []
 
-        if crossovers == 0 or i >= crossovers:
-            # If there are no crossovers, just make a list of triangles from parent 1.
+        if crossovers == 0 or i not in crossover_set:
+            # If there are no crossovers, or this child is not in the crossover list,
+            # just use one parent.
             parent_1_triangles = copy.deepcopy(parent_1.triangles)
 
-        if crossovers != 0 and i < crossovers:
+        if crossovers != 0 and i in crossover_set:
             # If there are crossovers, get a random number of triangles to select from each parent.
             select_size = random.randint(1, num_of_triangles - 1)
 
@@ -166,7 +175,7 @@ def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, cros
             for triangle in parent_2_triangles:
                 child.triangles.append(triangle)
 
-        if mutations != 0 and i < mutations:
+        if mutations != 0 and i in mutation_set:
             # If there are mutations, mutate the child.
             child = mutation(child, mutation_amount, img_width, img_height)
 
