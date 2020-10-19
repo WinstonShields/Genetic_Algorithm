@@ -141,7 +141,6 @@ def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, cros
 
     # Make a set of randomized children that will mutate, with the
     # size being based off of the crossover rate.
-    print(mutations)
     mutation_set = set(random.sample(range(0, population_size), mutations))
 
     for i in range(population_size):
