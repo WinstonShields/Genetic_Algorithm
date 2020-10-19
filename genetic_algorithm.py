@@ -124,7 +124,7 @@ def selection(target_img, individuals):
     return [parent_1, parent_2]
 
 
-def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, crossover_rate, mutation_rate, img_width, img_height):
+def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, crossover_rate, mutation_rate, mutation_amount, img_width, img_height):
     # Initialize a list of children.
     children = []
 
@@ -168,7 +168,7 @@ def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, cros
 
         if mutations != 0 and i < mutations:
             # If there are mutations, mutate the child.
-            child = mutation(child, img_width, img_height)
+            child = mutation(child, mutation_amount, img_width, img_height)
 
         child.create_image(img_width, img_height)
 
@@ -180,9 +180,9 @@ def reproduction(parent_1, parent_2, population_size, num_of_triangles, id, cros
     return children
 
 
-def mutation(individual, img_width, img_height):
-    # Make the mutation amount of the individual only 10%.
-    for x in range(random.randint(1, int(len(individual.triangles)*0.10))):
+def mutation(individual, mutation_amount, img_width, img_height):
+    # Mutate the specified amount of times.
+    for x in range(int(len(individual.triangles)*mutation_amount)):
         ax = random.randint(0, img_width)
         ay = random.randint(0, img_height)
         bx = random.randint(0, img_width)

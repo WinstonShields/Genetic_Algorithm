@@ -6,22 +6,25 @@ import os
 import gc
 
 
-def command_line_arg(target_img, population_size, num_of_triangles, crossover_rate, mutation_rate):
+def command_line_arg(target_img, population_size, num_of_triangles, crossover_rate, mutation_rate, mutation_amount):
     if float(crossover_rate) > 1.0 or float(crossover_rate) < 0.0:
         print("Crossover rate must be between 0.0 and 1.0")
         exit(1)
-    if float(mutation_rate) > 1.0 or float(crossover_rate) < 0.0:
+    if float(mutation_rate) > 1.0 or float(mutation_rate) < 0.0:
         print("Mutation rate must be between 0.0 and 1.0")
         exit(1)
+    if float(mutation_amount) > 1.0 or float(mutation_amount) < 0.0:
+        print("Mutation amount must be between 0.0 and 1.0")
+        exit(1)
 
-    return [Image.open(target_img), population_size, num_of_triangles, crossover_rate, mutation_rate]
+    return [Image.open(target_img), population_size, num_of_triangles, crossover_rate, mutation_rate, mutation_amount]
 
 
 if __name__ == "__main__":
     # Retrieve the target image, initial population size, and
     # number of triangles for each individual.
-    target_img, population_size, num_of_triangles, crossover_rate, mutation_rate = command_line_arg(
-        sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
+    target_img, population_size, num_of_triangles, crossover_rate, mutation_rate, mutation_amount = command_line_arg(
+        sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]), float(sys.argv[6]))
 
     img_width, img_height = target_img.size
 
@@ -49,7 +52,8 @@ if __name__ == "__main__":
 
         # Retrieve the children individuals using the reproduction funciton call.
         children = genetic_algorithm.reproduction(
-            parent_1, parent_2, population_size, num_of_triangles, next_id, crossover_rate, mutation_rate, img_width, img_height)
+            parent_1, parent_2, population_size, num_of_triangles, next_id, crossover_rate, mutation_rate,
+            mutation_amount, img_width, img_height)
 
         parent_1, parent_2 = genetic_algorithm.selection(target_img, children)
 
@@ -60,7 +64,7 @@ if __name__ == "__main__":
             parent_1.image.save(f"generated_images/{parent_1.id}.jpg", 'JPEG')
             parent_2.image.save(f"generated_images/{parent_2.id}.jpg", 'JPEG')
 
-        # Delete the children to 
+        # Delete the children to
         del children
         gc.collect()
 
