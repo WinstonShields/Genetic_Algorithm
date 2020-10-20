@@ -46,8 +46,6 @@ class Individual:
         # image.
         img = Image.new('RGB', (img_width, img_height))
 
-        background_draw = ImageDraw.Draw(img)
-
         # Create draw object with alpha channel (so that image can be translucent).
         draw = ImageDraw.Draw(img, 'RGBA')
 
