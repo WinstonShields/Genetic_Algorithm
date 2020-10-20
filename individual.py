@@ -48,9 +48,6 @@ class Individual:
 
         background_draw = ImageDraw.Draw(img)
 
-        background_draw.polygon(
-            [(0, 0), (0, img_height), (img_width, img_height), (img_width, 0)], (255, 255, 255, 255))
-
         # Create draw object with alpha channel (so that image can be translucent).
         draw = ImageDraw.Draw(img, 'RGBA')
 
