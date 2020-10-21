@@ -37,7 +37,7 @@ py main.py mona_lisa.jpg 20 100 0.1 0.7 0.1
 * Number of Triangles: The number of triangles present in an individual/image.
 * Crossover Rate: Percentage of individuals that reproduce sexually or asexually (The closer to 1, the more reproduced sexually).
 * Mutation Rate: Percentage of how many individuals get mutated.
-* Mutation Amount: Percentage of how many triangles in an individual get
+* Mutation Amount: Percentage of how many triangles in an individual get mutated.
 
 ## Results
 The replicated images will be saved in the newly created "generated_images" directory. It will save an image in every 20
