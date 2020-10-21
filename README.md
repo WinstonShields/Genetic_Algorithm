@@ -4,7 +4,7 @@ The genetic operations include a fitness function, crossover, asexual reproducti
 and mutations.
 The idea was inspired by the following blog:
 
-<a href=https://rogerjohansson.blog/2008/12/07/genetic-programming-evolution-of-mona-lisa/> 
+<a href=https://rogerjohansson.blog/2008/12/07/genetic-programming-evolution-of-mona-lisa> 
 Genetic Programming: Evolution of Mona Lisa </a>
 
 ## Dependencies
