@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parent_1.image.save(f"generated_images/{parent_1.id}.jpg", 'JPEG')
     parent_2.image.save(f"generated_images/{parent_2.id}.jpg", 'JPEG')
 
-    # Delete the individuals from memory to speed up the program.
+    # Remove the individuals from memory to speed up the program.
     del individuals
     gc.collect()
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
             parent_1.image.save(f"generated_images/{parent_1.id}.jpg", 'JPEG')
             parent_2.image.save(f"generated_images/{parent_2.id}.jpg", 'JPEG')
 
-        # Delete the children to
+        # Remove the children from memory to speed up the program.
         del children
         gc.collect()
 
